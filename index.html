@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        <form>
+            <fieldset>
+                <label for="search-brreg-input">Finn din bedrift i brønnøysundregistrene</label>
+                <section>
+                    <span id="search-brreg-icon">🔍</span><input id="search-brreg-input">
+                </section>
+                <ul id="search-brreg-list">
+                    <li>1</li>
+                    <li>2</li>
+                    <li>3</li>
+                </ul>
+            </fieldset>
+            <fieldset>
+                <input id="search-brreg-submit" type="submit" value="Gå videre">
+            </fieldset>
+        </form>
+    </body>
+    <style>
+        html { height: 100vh; }
+        body { display: flex; flex-direction: column; justify-content: center; height: 100%; align-items: center;}
+        body > form { width: 420px; }
+        body > form > fieldset { display: flex; flex-direction: column; border: 0; }
+        #search-brreg-icon { position: absolute; margin: 10px 10px 10px 8px; }
+        #search-brreg-input { font-size: 24px; padding: 5px 5px 5px 35px; height: 40px; width: calc(100% - 35px);}
+        #search-brreg-list { border: 1px solid #dedede;  font-size: 14px; padding: 0; width: 420px; overflow: auto; height: 200px; list-style-type: none; position: absolute; margin: 80px 0 0 0; background-color: white; visibility: hidden; }
+        #search-brreg-list > li { height: 40px; padding: 10px 0 0px 35px; border-bottom: 1px solid #dedede; }
+        #search-brreg-list > li:hover { background-color: #dedede; cursor: pointer; }
+        #search-brreg-submit { width: 100%; }
+    </style>
+
+    <script>
+    const searchList = document.querySelector("#search-brreg-list")
+    
+    document.querySelector("#search-brreg-input").addEventListener("input", (e) => {
+        const value = e.target.value;
+        if (value == "" || !value) {
+            searchList.style.visibility = "hidden";
+            return
+        }
+
+        const brregURL = `https://data.brreg.no/enhetsregisteret/api/enheter?navn=${value}`
+
+        fetch(brregURL)
+            .catch(console.error)
+            .then(res => res.json())
+            .catch(console.error)
+            .then(json => {
+                const { _embedded: { enheter }, _links, page } = json
+
+                if (enheter.length == 0) {
+                    searchList.style.visibility = "hidden";
+                    return;
+                }
+
+                let html = "";
+
+                for (const enhet of enheter) {
+                    const { organisasjonsnummer, navn, forretningsadresse, postadresse } = enhet
+                    const postnummer = forretningsadresse?.postnummer ?? postadresse?.postnummer
+                    const poststed = forretningsadresse?.poststed ?? postadresse?.poststed
+                    
+                    html += `<li>${navn} orgnr.${organisasjonsnummer} <br>${postnummer} ${poststed}</li>`;
+                }
+
+                searchList.innerHTML = html;
+                searchList.style.visibility = "visible";
+            })
+            .catch(console.error)
+
+    })
+
+    </script>
+</html>
