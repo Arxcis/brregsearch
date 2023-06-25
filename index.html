@@ -33,14 +33,63 @@
     </style>
 
     <script>
+    let value = undefined;
+    let page = undefined;
+
     const searchList = document.querySelector("#search-brreg-list")
+    const searchInput = document.querySelector("#search-brreg-input")
     
-    document.querySelector("#search-brreg-input").addEventListener("input", (e) => {
-        const value = e.target.value;
-        if (value == "" || !value) {
+    searchList.addEventListener("scroll", ({target}) => {
+        
+        // Explanation here -> https://stackoverflow.com/a/34550171
+        const distanceToBottom = Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight)
+        if (distanceToBottom >= 1) {
+            return;
+        }
+
+        if (!page) {
+            return
+        }
+        const { totalPages, number } = page;
+        console.log({totalPages, number })
+        if (number >= totalPages-1) {
+            return;
+        }
+
+        if (!value) {
+            return
+        }
+        const brregURL = `https://data.brreg.no/enhetsregisteret/api/enheter?navn=${value}&page=${number+1}`
+
+        fetch(brregURL)
+            .catch(console.error)
+            .then(res => res.json())
+            .catch(console.error)
+            .then(json => {
+                const { _embedded: { enheter }, _links, page: _page } = json
+                page = _page
+
+                let html = "";
+
+                for (const enhet of enheter) {
+                    const { organisasjonsnummer, navn, forretningsadresse, postadresse } = enhet
+                    const postnummer = forretningsadresse?.postnummer ?? postadresse?.postnummer
+                    const poststed = forretningsadresse?.poststed ?? postadresse?.poststed
+                    
+                    html += `<li>${navn} orgnr.${organisasjonsnummer} <br>${postnummer} ${poststed}</li>`;
+                }
+                searchList.innerHTML += html;
+            })
+
+    })
+
+    searchInput.addEventListener("input", (e) => {
+        const _value = e.target.value;
+        if (_value == "" || !_value) {
             searchList.style.visibility = "hidden";
             return
         }
+        value = _value;
 
         const brregURL = `https://data.brreg.no/enhetsregisteret/api/enheter?navn=${value}`
 
@@ -49,12 +98,16 @@
             .then(res => res.json())
             .catch(console.error)
             .then(json => {
-                const { _embedded: { enheter }, _links, page } = json
+                const { _embedded: { enheter }, _links, page: _page } = json
+                page = _page
+                const { totalPages, number } = page;
+        console.log({totalPages, number })
 
                 if (enheter.length == 0) {
                     searchList.style.visibility = "hidden";
                     return;
                 }
+
 
                 let html = "";
 
