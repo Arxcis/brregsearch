@@ -4,15 +4,16 @@
         <meta charset="utf-8"/>
     </head>
     <body>
-        <form>
+        <form method="get" action="./">
             <h2>Hvilken epost kan vi nå deg på?</h2>
             <fieldset>
-                <label>Name</label>
-                <input name="name" value="" disabled>
+                <label>Navn på organisasjon</label>
+                <input id="disabledNameInput" name="disabled-name" disabled>
+                <input id="nameInput" type="hidden" name="name">
             </fieldset>
             <fieldset>
                 <label>Epost</label>
-                <input id="inputepost" name="epost" value="" autofocus onfocus="this.select()">
+                <input id="emailInput" name="email" value="" type="email" autofocus onfocus="this.select()">
             </fieldset>
             <fieldset id="buttonset">
                 <a href="/">Tilbake</a>
@@ -28,12 +29,18 @@
     </style>
     <script>
         window.addEventListener("load", () => {
-            const nameInput = document.querySelector("body > form > fieldset > input")
+            const disabledNameInput = document.querySelector("#disabledNameInput")
+            const nameInput = document.querySelector("#nameInput")
+            const emailInput = document.querySelector("#emailInput")
+
             const urlParams = new URLSearchParams(window.location.search);
             const name = urlParams.get("name") ?? "";
+            const email = urlParams.get("email") ?? "";
 
-            console.log({urlParams})
+
+            disabledNameInput.value = name
             nameInput.value = name
+            emailInput.value = email
         })
     </script>
 </html>
