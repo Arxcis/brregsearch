@@ -1,12 +1,15 @@
-<!DOCTYPE html>
+<!DOCTYPE html5>
 <html>
-    <head></head>
+    <head>
+        <meta charset="utf-8">
+    </head>
+
     <body>
-        <form>
+        <form method="get" action="form">
             <fieldset>
                 <label for="search-brreg-input">Finn din bedrift i brønnøysundregistrene</label>
                 <section>
-                    <span class="search-brreg-icon">🔍</span><input id="search-brreg-input"><span class="search-brreg-icon" id="search-brreg-cross">❌</span>
+                    <span class="search-brreg-icon">🔍</span><input id="search-brreg-input" name="name"><span class="search-brreg-icon" id="search-brreg-cross">❌</span>
                 </section>
                 <ul id="search-brreg-list">
                 </ul>
@@ -15,8 +18,8 @@
                 <input id="search-brreg-submit" type="submit" value="Gå videre">
             </fieldset>
         </form>
-     
     </body>
+
     <style>
         html { height: 100vh; }
         body { display: flex; flex-direction: column; justify-content: center; height: 100%; align-items: center;}
@@ -32,6 +35,7 @@
     </style>
 
     <script>
+
     let value = undefined;
     let page = undefined;
 
@@ -39,7 +43,10 @@
     const searchInput = document.querySelector("#search-brreg-input")
     const searchCross = document.querySelector("#search-brreg-cross")
     
-    searchCross.addEventListener("click", () => { searchList.innerHTML = ""; searchInput.value = ""; value = undefined; page = undefined; })
+    searchCross.addEventListener("click", () => { 
+        searchList.innerHTML = ""; searchInput.value = ""; value = undefined; page = undefined; 
+        searchList.style.visibility = "hidden";
+    })
 
     searchList.addEventListener("scroll", ({target}) => {
         
@@ -136,6 +143,7 @@
             console.log({value})
             searchInput.value = value
             searchList.innerHTML = "";
+            searchList.style.visibility = "hidden";
         }))
     }
 

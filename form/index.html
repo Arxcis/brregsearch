@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        <form>
+            <label>Kontaktinformasjon</label>
+            <fieldset>
+                <label>Name</label>
+                <input name="name" value="">
+            </fieldset>
+            <fieldset>
+                <label>Epost</label>
+                <input id="inputepost" name="epost" value="" autofocus onfocus="this.select()">
+            </fieldset>
+            <button>Send</button>
+        </form>
+    </body>
+    <style>
+        body { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        fieldset { border: 0; padding: 10px 0 10px 0; }
+        button { margin: 10px 0; }
+    </style>
+    <script>
+        window.addEventListener("load", () => {
+            const nameInput = document.querySelector("body > form > fieldset > input")
+            const urlParams = new URLSearchParams(window.location.search);
+            const name = urlParams.get("name") ?? "";
+
+            console.log({urlParams})
+            nameInput.value = name
+        })
+    </script>
+</html>
